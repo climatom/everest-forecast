@@ -19,7 +19,7 @@ def load_data():
 df = load_data()
 
 # Convert time here to NPT
-df["time"] = pd.to_datetime(df["time"]).dt.tz_localize("UTC").dt.tz_convert("Asia/Kathmandu")
+#df["time"] = pd.to_datetime(df["time"]).dt.tz_localize("UTC").dt.tz_convert("Asia/Kathmandu")
 
 
 # Convert VO2 max to % of max oxygenless ascents... 

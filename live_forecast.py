@@ -19,8 +19,7 @@ def load_data():
 df = load_data()
 
 # Convert time here to NPT
-#df["time"] = pd.to_datetime(df["time"]).dt.tz_localize("UTC").dt.tz_convert("Asia/Kathmandu")
-
+df["time"] = pd.to_datetime(df["time"]) + pd.Timedelta(hours=5, minutes=45)
 
 # Convert VO2 max to % of max oxygenless ascents... 
 # All taken from ISci reconstruction!
@@ -29,6 +28,7 @@ ltm_vo2max=16.397887344862063
 ltm_pio=56.977246222636495
 
 df["vo2max_score"]=df["vo2max"]/ltm_vo2max
+df["time"] = pd.to_datetime(df["time"]) + pd.Timedelta(hours=5, minutes=45)
 
 # === Streamlit UI ===
 st.title("🏔️ Everest Summit Forecast")
@@ -38,12 +38,12 @@ fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 # === Top subplot: Temperature and Wind ===
 ax1.plot(df["time"], df["temp_C"], color="tab:blue", label="Temperature (°C)")
 ax1.set_ylabel("Temperature [°C]", color="tab:blue")
-ax1.tick_params(axis="y", labelcolor="tab:red")
+ax1.tick_params(axis="y", labelcolor="tab:blue")
 
 ax2 = ax1.twinx()
 ax2.plot(df["time"], df["w"], color="tab:red", label="Wind Speed (m/s)")
 ax2.set_ylabel("Wind Speed [m/s]", color="tab:red")
-ax2.tick_params(axis="y", label,color="tab:red")
+ax2.tick_params(axis="y", labelcolor="tab:red")
 ax.axhline(20.0,linestyle='--',color='red')
 
 ax1.set_title("Forecast: Temperature & Wind at Everest Summit")
@@ -52,7 +52,7 @@ ax1.grid(True)
 # === Bottom subplot: VO2 max as score  ===
 ax3.plot(df["time"], df["vo2max_score"], color="tab:green")
 ax3.set_ylabel("VO₂max [prop. of LTM]", color="tab:green")
-ax3.tick_params(axis="y", labelcolor="tab:green")
+ax3.tick_params(axis="y", color="tab:green")
 
 # ax4 = ax3.twinx()
 # ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
