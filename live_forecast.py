@@ -4,79 +4,96 @@ import streamlit as st
 import matplotlib.dates as mdates
 
 # === Config ===
-file_id = "1Sp9vHcg60ThxQPhahr69QGWJdi3VopbU"
-csv_url = f"https://drive.google.com/uc?id={file_id}"
+gfs_file_id = "1Sp9vHcg60ThxQPhahr69QGWJdi3VopbU"
+ecmwf_file_id = "1Pl-kR2ngv9vQ2z7PymUdQU3jiMD0njXx"
+
+def gdrive_csv_url(file_id):
+    return f"https://drive.google.com/uc?id={file_id}"
 
 # === Load data ===
 @st.cache_data(ttl=300)
-def load_data():
-    df = pd.read_csv(csv_url, parse_dates=["time"])
-    
-    # Derived variables
+def load_csv(url):
+    df = pd.read_csv(url, parse_dates=["time"])
     df["temp_C"] = df["t"] - 273.15
+    df["time"] = pd.to_datetime(df["time"]) + pd.Timedelta(hours=5, minutes=45)
     return df
 
-df = load_data()
+df_gfs = load_csv(gdrive_csv_url(gfs_file_id))
+df_ecmwf = load_csv(gdrive_csv_url(ecmwf_file_id))
 
-# Convert time here to NPT
-df["time"] = pd.to_datetime(df["time"]) + pd.Timedelta(hours=5, minutes=45)
+# === Constants for VO₂max normalization ===
+ltm_vo2max = 16.397887344862063
+lt_min_vo2max = 15.686907307347052
+lt_max_vo2max = 16.990437986057785
 
-# Convert VO2 max to % of max oxygenless ascents... 
-# All taken from ISci reconstruction!
-ltm_p=334.79086538461536 
-ltm_vo2max=16.397887344862063
-ltm_pio=56.977246222636495
-
-lt_min_vo2max=15.686907307347052
-lt_max_vo2max=16.990437986057785
-
-df["vo2max_score"]=(df["vo2max"]/ltm_vo2max-1.)*100.
-df["time"] = pd.to_datetime(df["time"]) + pd.Timedelta(hours=5, minutes=45)
+# === Derived VO2max scores ===
+df_gfs["vo2max_score"] = (df_gfs["vo2max"] / ltm_vo2max - 1.) * 100.
+df_ecmwf["vo2max_score"] = (df_ecmwf["vo2max"] / ltm_vo2max - 1.) * 100.
 
 # === Streamlit UI ===
-st.title("🏔️ Everest Summit Forecast")
+st.title("🏔️ Everest Summit Forecast (GFS vs ECMWF)")
 
-fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+fig, axs = plt.subplots(2, 2, figsize=(14, 8), sharex='row')
 
-# === Top subplot: Temperature and Wind ===
-ax1.plot(df["time"], df["temp_C"], color="tab:blue", label="Temperature (°C)")
-ax1.set_ylabel("Temperature [°C]", color="tab:blue",fontsize=14)
+# === GFS (Left Column) ===
+ax1, ax3 = axs[0, 0], axs[1, 0]
+
+# Top: Temp + Wind
+ax1.plot(df_gfs["time"], df_gfs["temp_C"], color="tab:blue", label="Temp (°C)")
+ax1.set_ylabel("Temp [°C]", color="tab:blue")
 ax1.tick_params(axis="y", labelcolor="tab:blue")
-
 ax2 = ax1.twinx()
-ax2.plot(df["time"], df["w"], color="tab:red", label="Wind Speed (m/s)")
-ax2.set_ylabel("Wind Speed [m/s]", color="tab:red",fontsize=14)
+ax2.plot(df_gfs["time"], df_gfs["w"], color="tab:red", label="Wind")
+ax2.set_ylabel("Wind [m/s]", color="tab:red")
 ax2.tick_params(axis="y", labelcolor="tab:red")
-ax2.axhline(20.0,linestyle='--',color='red')
-
-ax1.set_title("Forecast: Temperature & Wind at Everest Summit")
+ax2.axhline(20.0, linestyle='--', color='red')
+ax1.set_title("GFS: Temperature & Wind")
 ax1.grid(True)
 
-# === Bottom subplot: VO2 max as score  ===
-ax3.plot(df["time"], df["vo2max_score"], color="tab:green")
-ax3.set_ylabel("$\Delta$ VO₂max [% of LTM]", color="tab:green",fontsize=14)
-ax3.tick_params(axis="y", color="tab:green")
-ax3.axhline((lt_min_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
-ax3.axhline((lt_max_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
-
-# ax4 = ax3.twinx()
-# ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
-# ax4.set_ylabel("VO₂max (ml/min/kg"), color="tab:purple")
-# ax4.tick_params(axis="y", labelcolor="tab:purple")
-
-ax3.set_title("Forecast VO₂max @ Summit (% deviation from mean no-O ascents)")
+# Bottom: VO₂max score
+ax3.plot(df_gfs["time"], df_gfs["vo2max_score"], color="tab:green")
+ax3.set_ylabel("ΔVO₂max [%]", color="tab:green")
+ax3.axhline((lt_min_vo2max/ltm_vo2max - 1)*100, color='tab:green', linestyle='--')
+ax3.axhline((lt_max_vo2max/ltm_vo2max - 1)*100, color='tab:green', linestyle='--')
+ax3.set_title("GFS: VO₂max Deviation (LTM, no-O₂ summits)")
 ax3.grid(True)
 
-# Final layout
-for ax in [ax1, ax3]:
+# === ECMWF (Right Column) ===
+ax1r, ax3r = axs[0, 1], axs[1, 1]
+
+# Top: Temp + Wind
+ax1r.plot(df_ecmwf["time"], df_ecmwf["temp_C"], color="tab:blue", label="Temp (°C)")
+ax1r.set_ylabel("Temp [°C]", color="tab:blue")
+ax1r.tick_params(axis="y", labelcolor="tab:blue")
+ax2r = ax1r.twinx()
+ax2r.plot(df_ecmwf["time"], df_ecmwf["w"], color="tab:red", label="Wind")
+ax2r.set_ylabel("Wind [m/s]", color="tab:red")
+ax2r.tick_params(axis="y", labelcolor="tab:red")
+ax2r.axhline(20.0, linestyle='--', color='red')
+ax1r.set_title("ECMWF: Temperature & Wind")
+ax1r.grid(True)
+
+# Bottom: VO₂max score
+ax3r.plot(df_ecmwf["time"], df_ecmwf["vo2max_score"], color="tab:green")
+ax3r.set_ylabel("ΔVO₂max [%]", color="tab:green")
+ax3r.axhline((lt_min_vo2max/ltm_vo2max - 1)*100, color='tab:green', linestyle='--')
+ax3r.axhline((lt_max_vo2max/ltm_vo2max - 1)*100, color='tab:green', linestyle='--')
+ax3r.set_title("ECMWF: VO₂max Deviation (LTM, no-O₂ summits)")
+ax3r.grid(True)
+
+# === Format X axis ===
+for ax in [ax1, ax1r, ax3, ax3r]:
     ax.xaxis.set_major_locator(mdates.DayLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
-    
-ax3.set_ylim(-6.,6.)
-ax.set_xlabel("Time [NPT]")
-plt.xticks(rotation=45)
+    ax.tick_params(axis="x", rotation=45)
+
+ax3.set_xlabel("Time [NPT]")
+ax3r.set_xlabel("Time [NPT]")
 plt.tight_layout()
+
+# Show plot
 st.pyplot(fig)
 
-# Optional: Last update time
-st.caption(f"⏱️ Forecast run: {df['time'].min().strftime('%Y-%m-%d %H:%M NPT')}")
+# Caption: forecast timing
+st.caption(f"🕒 GFS forecast from: {df_gfs['time'].min().strftime('%Y-%m-%d %H:%M NPT')}")
+st.caption(f"🕒 ECMWF forecast from: {df_ecmwf['time'].min().strftime('%Y-%m-%d %H:%M NPT')}")
