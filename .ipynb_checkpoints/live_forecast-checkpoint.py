@@ -58,7 +58,6 @@ ax3.set_ylabel("VO₂max [prop. of LTM]", color="tab:green")
 ax3.tick_params(axis="y", color="tab:green")
 ax3.axhline(lt_min_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
 ax3.axhline(lt_max_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
-ax3.set_ylim(0.9,1.1)
 
 # ax4 = ax3.twinx()
 # ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
@@ -72,6 +71,8 @@ ax3.grid(True)
 for ax in [ax1, ax3]:
     ax.xaxis.set_major_locator(mdates.DayLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    
+ax3.set_ylim(0.9,1.1)
 ax.set_xlabel("Time [NPT]")
 plt.xticks(rotation=45)
 plt.tight_layout()
