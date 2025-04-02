@@ -11,7 +11,7 @@ def gdrive_csv_url(file_id):
     return f"https://drive.google.com/uc?id={file_id}"
 
 # === Load data ===
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=30)
 def load_csv(url):
     df = pd.read_csv(url, parse_dates=["time"])
     df["temp_C"] = df["t"] - 273.15
