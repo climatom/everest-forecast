@@ -95,5 +95,5 @@ plt.tight_layout()
 st.pyplot(fig)
 
 # Caption: forecast timing
-st.caption(f"🕒 GFS forecast from: {df_gfs['time'].min().strftime('%Y-%m-%d %H:%M NPT')}")
-st.caption(f"🕒 ECMWF forecast from: {df_ecmwf['time'].min().strftime('%Y-%m-%d %H:%M NPT')}")
+st.caption(f"🕒 GFS cycle: {df_gfs['time'].min():%Y-%m-%d %H:%M} NPT | ECMWF cycle: {df_ecmwf['time'].min():%Y-%m-%d %H:%M} NPT")
+
