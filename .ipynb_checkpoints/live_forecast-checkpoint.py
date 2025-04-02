@@ -27,6 +27,9 @@ ltm_p=334.79086538461536
 ltm_vo2max=16.397887344862063
 ltm_pio=56.977246222636495
 
+lt_min_vo2max=15.686907307347052
+lt_max_vo2max=16.990437986057785
+
 df["vo2max_score"]=df["vo2max"]/ltm_vo2max
 df["time"] = pd.to_datetime(df["time"]) + pd.Timedelta(hours=5, minutes=45)
 
@@ -53,6 +56,8 @@ ax1.grid(True)
 ax3.plot(df["time"], df["vo2max_score"], color="tab:green")
 ax3.set_ylabel("VO₂max [prop. of LTM]", color="tab:green")
 ax3.tick_params(axis="y", color="tab:green")
+ax3.axhline(lt_min_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
+ax3.axhline(lt_max_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
 
 # ax4 = ax3.twinx()
 # ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
