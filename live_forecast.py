@@ -58,6 +58,7 @@ ax3.set_ylabel("VO₂max [prop. of LTM]", color="tab:green")
 ax3.tick_params(axis="y", color="tab:green")
 ax3.axhline(lt_min_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
 ax3.axhline(lt_max_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
+ax3.set_ylim(0.9,1.1)
 
 # ax4 = ax3.twinx()
 # ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
