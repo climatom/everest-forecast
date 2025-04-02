@@ -54,7 +54,7 @@ ax1.grid(True)
 
 # === Bottom subplot: VO2 max as score  ===
 ax3.plot(df["time"], df["vo2max_score"], color="tab:green")
-ax3.set_ylabel("$\delta$ VO₂max [% of LTM]", color="tab:green")
+ax3.set_ylabel("$\Delta$ VO₂max [% of LTM]", color="tab:green")
 ax3.tick_params(axis="y", color="tab:green")
 ax3.axhline((lt_min_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
 ax3.axhline((lt_max_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
@@ -64,7 +64,7 @@ ax3.axhline((lt_max_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
 # ax4.set_ylabel("VO₂max (ml/min/kg"), color="tab:purple")
 # ax4.tick_params(axis="y", labelcolor="tab:purple")
 
-ax3.set_title("Forecast VO₂max @ Summit (>1 = better than 'average' for no-O ascent)")
+ax3.set_title("Forecast VO₂max @ Summit (% deviation from mean no-O ascents)")
 ax3.grid(True)
 
 # Final layout
