@@ -31,7 +31,7 @@ df_gfs["vo2max_score"] = (df_gfs["vo2max"] / ltm_vo2max - 1.) * 100.
 df_ecmwf["vo2max_score"] = (df_ecmwf["vo2max"] / ltm_vo2max - 1.) * 100.
 
 # === Streamlit UI ===
-st.title("🏔️ Everest Summit Forecast (GFS vs ECMWF)")
+st.title("🏔️ Everest Summit Forecast")
 
 fig, axs = plt.subplots(2, 2, figsize=(14, 8), sharex='row')
 
