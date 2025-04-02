@@ -40,13 +40,13 @@ fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
 # === Top subplot: Temperature and Wind ===
 ax1.plot(df["time"], df["temp_C"], color="tab:blue", label="Temperature (°C)")
-ax1.set_ylabel("Temperature [°C]", color="tab:blue")
+ax1.set_ylabel("Temperature [°C]", color="tab:blue",fontsize=14)
 ax1.tick_params(axis="y", labelcolor="tab:blue")
 
 ax2 = ax1.twinx()
 ax2.plot(df["time"], df["w"], color="tab:red", label="Wind Speed (m/s)")
 ax2.set_ylabel("Wind Speed [m/s]", color="tab:red")
-ax2.tick_params(axis="y", labelcolor="tab:red")
+ax2.tick_params(axis="y", labelcolor="tab:red",fontsize=14)
 ax2.axhline(20.0,linestyle='--',color='red')
 
 ax1.set_title("Forecast: Temperature & Wind at Everest Summit")
