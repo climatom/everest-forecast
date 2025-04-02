@@ -54,7 +54,7 @@ ax1.grid(True)
 
 # === Bottom subplot: VO2 max as score  ===
 ax3.plot(df["time"], df["vo2max_score"], color="tab:green")
-ax3.set_ylabel("$\Delta$ VO₂max [% of LTM]", color="tab:green")
+ax3.set_ylabel("$\Delta$ VO₂max [% of LTM]", color="tab:green",fontsize=14)
 ax3.tick_params(axis="y", color="tab:green")
 ax3.axhline((lt_min_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
 ax3.axhline((lt_max_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
