@@ -59,7 +59,7 @@ ax3.tick_params(axis="y", color="tab:green")
 # ax4.set_ylabel("VO₂max (ml/min/kg"), color="tab:purple")
 # ax4.tick_params(axis="y", labelcolor="tab:purple")
 
-ax3.set_title("VO₂max score")
+ax3.set_title("VO₂max @ Summit (>1 = better than 'average' for no-O ascent)")
 ax3.grid(True)
 
 # Final layout
@@ -72,4 +72,4 @@ plt.tight_layout()
 st.pyplot(fig)
 
 # Optional: Last update time
-st.caption(f"⏱️ Forecast run: {df['time'].min().strftime('%Y-%m-%d %H:%M UTC')}")
+st.caption(f"⏱️ Forecast run: {df['time'].min().strftime('%Y-%m-%d %H:%M NPT')}")
