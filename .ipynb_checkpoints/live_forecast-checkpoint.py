@@ -45,8 +45,8 @@ ax1.tick_params(axis="y", labelcolor="tab:blue")
 
 ax2 = ax1.twinx()
 ax2.plot(df["time"], df["w"], color="tab:red", label="Wind Speed (m/s)")
-ax2.set_ylabel("Wind Speed [m/s]", color="tab:red")
-ax2.tick_params(axis="y", labelcolor="tab:red",fontsize=14)
+ax2.set_ylabel("Wind Speed [m/s]", color="tab:red",fontsize=14)
+ax2.tick_params(axis="y", labelcolor="tab:red")
 ax2.axhline(20.0,linestyle='--',color='red')
 
 ax1.set_title("Forecast: Temperature & Wind at Everest Summit")
