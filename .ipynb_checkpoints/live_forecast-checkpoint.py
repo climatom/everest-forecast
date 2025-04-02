@@ -30,7 +30,7 @@ ltm_pio=56.977246222636495
 lt_min_vo2max=15.686907307347052
 lt_max_vo2max=16.990437986057785
 
-df["vo2max_score"]=df["vo2max"]/ltm_vo2max
+df["vo2max_score"]=(df["vo2max"]/ltm_vo2max-1.)*100.
 df["time"] = pd.to_datetime(df["time"]) + pd.Timedelta(hours=5, minutes=45)
 
 # === Streamlit UI ===
@@ -54,10 +54,10 @@ ax1.grid(True)
 
 # === Bottom subplot: VO2 max as score  ===
 ax3.plot(df["time"], df["vo2max_score"], color="tab:green")
-ax3.set_ylabel("VO₂max [prop. of LTM]", color="tab:green")
+ax3.set_ylabel("$\delta$ VO₂max [% of LTM]", color="tab:green")
 ax3.tick_params(axis="y", color="tab:green")
-ax3.axhline(lt_min_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
-ax3.axhline(lt_max_vo2max/ltm_vo2max, color='tab:green',linestyle='--')
+ax3.axhline((lt_min_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
+ax3.axhline((lt_max_vo2max/ltm_vo2max-1)*100, color='tab:green',linestyle='--')
 
 # ax4 = ax3.twinx()
 # ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
@@ -72,7 +72,7 @@ for ax in [ax1, ax3]:
     ax.xaxis.set_major_locator(mdates.DayLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
     
-ax3.set_ylim(0.9,1.1)
+ax3.set_ylim(-6.,6.)
 ax.set_xlabel("Time [NPT]")
 plt.xticks(rotation=45)
 plt.tight_layout()
