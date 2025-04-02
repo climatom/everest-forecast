@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import matplotlib.dates as mdates
 
 # === Config ===
 file_id = "1Sp9vHcg60ThxQPhahr69QGWJdi3VopbU"
@@ -17,41 +18,58 @@ def load_data():
 
 df = load_data()
 
+# Convert time here to NPT
+df["time"] = pd.to_datetime(df["time"]).dt.tz_localize("UTC").dt.tz_convert("Asia/Kathmandu")
+
+
+# Convert VO2 max to % of max oxygenless ascents... 
+# All taken from ISci reconstruction!
+ltm_p=334.79086538461536 
+ltm_vo2max=16.397887344862063
+ltm_pio=56.977246222636495
+
+df["vo2max_score"]=df["vo2max"]/ltm_vo2max
+
 # === Streamlit UI ===
 st.title("🏔️ Everest Summit Forecast")
 
 fig, (ax1, ax3) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
 # === Top subplot: Temperature and Wind ===
-ax1.plot(df["time"], df["temp_C"], color="tab:red", label="Temperature (°C)")
-ax1.set_ylabel("Temperature (°C)", color="tab:red")
+ax1.plot(df["time"], df["temp_C"], color="tab:blue", label="Temperature (°C)")
+ax1.set_ylabel("Temperature [°C]", color="tab:blue")
 ax1.tick_params(axis="y", labelcolor="tab:red")
 
 ax2 = ax1.twinx()
-ax2.plot(df["time"], df["w"], color="tab:blue", label="Wind Speed (m/s)")
-ax2.set_ylabel("Wind Speed (m/s)", color="tab:blue")
-ax2.tick_params(axis="y", labelcolor="tab:blue")
+ax2.plot(df["time"], df["w"], color="tab:red", label="Wind Speed (m/s)")
+ax2.set_ylabel("Wind Speed [m/s]", color="tab:red")
+ax2.tick_params(axis="y", label,color="tab:red")
+ax.axhline(20.0,linestyle='--',color='red')
 
 ax1.set_title("Forecast: Temperature & Wind at Everest Summit")
 ax1.grid(True)
 
-# === Bottom subplot: PIO₂ and VO2max ===
-ax3.plot(df["time"], df["pio"], color="tab:green", label="PIO₂ (hPa)")
-ax3.set_ylabel("PIO₂ (hPa)", color="tab:green")
+# === Bottom subplot: VO2 max as score  ===
+ax3.plot(df["time"], df["vo2max_score"], color="tab:green")
+ax3.set_ylabel("VO₂max [prop. of LTM]", color="tab:green")
 ax3.tick_params(axis="y", labelcolor="tab:green")
 
-ax4 = ax3.twinx()
-ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
-ax4.set_ylabel("VO₂max (", color="tab:purple")
-ax4.tick_params(axis="y", labelcolor="tab:purple")
+# ax4 = ax3.twinx()
+# ax4.plot(df["time"], df["vo2max"], color="tab:purple", label="VO₂max")
+# ax4.set_ylabel("VO₂max (ml/min/kg"), color="tab:purple")
+# ax4.tick_params(axis="y", labelcolor="tab:purple")
 
-ax3.set_title("Oxygen Availability & VO₂max")
+ax3.set_title("VO₂max score")
 ax3.grid(True)
 
 # Final layout
+for ax in [ax1, ax3]:
+    ax.xaxis.set_major_locator(mdates.DayLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+ax.set_xlabel("Time [NPT]")
 plt.xticks(rotation=45)
 plt.tight_layout()
 st.pyplot(fig)
 
 # Optional: Last update time
-st.caption(f"⏱️ Last updated: {df['time'].min().strftime('%Y-%m-%d %H:%M UTC')}")
+st.caption(f"⏱️ Forecast run: {df['time'].min().strftime('%Y-%m-%d %H:%M UTC')}")
